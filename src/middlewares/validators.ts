@@ -326,3 +326,19 @@ export const serviceValidators = {
       .withMessage('Invalid categoryId format'),
   ],
 };
+
+/**
+ * Validation rules for authentication requests.
+ */
+export const authValidators = {
+  login: [
+    body('username')
+      .notEmpty()
+      .withMessage('Username is required')
+      .isString(),
+    body('password')
+      .notEmpty()
+      .withMessage('Password is required')
+      .isString(),
+  ],
+};
