@@ -3,6 +3,7 @@ import { AppError, NotFoundError } from '../utils/AppError';
 import { escapeRegex } from '../utils/escapeRegex';
 import { getClinicToday } from '../utils/date';
 import { assertScheduleWithinWindow } from '../utils/schedule';
+import { timeToMinutes } from '../utils/time';
 import { env } from '../config/env';
 
 export class DoctorService {
@@ -130,13 +131,9 @@ export class DoctorService {
 
       // Check if the appointment time falls within the new hours
       const [startTime, endTime] = timeRange.split('-');
-      const [apptH, apptM] = appt.preferredTime.split(':').map(Number);
-      const [startH, startM] = startTime.split(':').map(Number);
-      const [endH, endM] = endTime.split(':').map(Number);
-
-      const apptMinutes = apptH * 60 + apptM;
-      const startMinutes = startH * 60 + startM;
-      const endMinutes = endH * 60 + endM;
+      const apptMinutes = timeToMinutes(appt.preferredTime);
+      const startMinutes = timeToMinutes(startTime);
+      const endMinutes = timeToMinutes(endTime);
 
       if (apptMinutes < startMinutes || apptMinutes >= endMinutes) {
         conflicts.push(
@@ -198,29 +195,6 @@ export class DoctorService {
     return { start, end };
   }
 
-  /**
-   * Generate all available time slots for a given time range.
-   * Each slot is 30 minutes.
-   */
-  generateTimeSlots(startTime: string, endTime: string): string[] {
-    const slots: string[] = [];
-    const [startH, startM] = startTime.split(':').map(Number);
-    const [endH, endM] = endTime.split(':').map(Number);
-
-    let currentMinutes = startH * 60 + startM;
-    const endMinutes = endH * 60 + endM;
-
-    while (currentMinutes < endMinutes) {
-      const hours = Math.floor(currentMinutes / 60);
-      const minutes = currentMinutes % 60;
-      slots.push(
-        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
-      );
-      currentMinutes += 30; // 30-minute intervals
-    }
-
-    return slots;
-  }
 }
 
 export const doctorService = new DoctorService();
