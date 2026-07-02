@@ -18,6 +18,10 @@ import uploadRoutes from './routes/upload.routes';
 
 const app = express();
 
+// Behind Vercel/nginx: trust the first proxy so req.ip is the real client IP
+// (required for correct per-client rate limiting).
+app.set('trust proxy', 1);
+
 // ─── Global Middleware ─────────────────────────────────────────────────────
 
 // CORS — only allow whitelisted origins (configured in .env)

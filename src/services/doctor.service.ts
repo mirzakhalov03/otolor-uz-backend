@@ -1,5 +1,6 @@
 import { Doctor, IDoctor, IWeeklySchedule } from '../models/Doctor';
 import { AppError, NotFoundError } from '../utils/AppError';
+import { escapeRegex } from '../utils/escapeRegex';
 
 export class DoctorService {
   /**
@@ -26,9 +27,10 @@ export class DoctorService {
     const filter: Record<string, unknown> = {};
 
     if (search) {
+      const safe = escapeRegex(search);
       filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { specialization: { $regex: search, $options: 'i' } },
+        { name: { $regex: safe, $options: 'i' } },
+        { specialization: { $regex: safe, $options: 'i' } },
       ];
     }
 

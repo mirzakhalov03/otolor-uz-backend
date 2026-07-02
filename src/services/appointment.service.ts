@@ -2,6 +2,7 @@ import { Appointment, IAppointment, AppointmentStatus } from '../models/Appointm
 import { getNextOrderNumber } from '../models/Counter';
 import { doctorService } from './doctor.service';
 import { AppError, NotFoundError, BadRequestError, ConflictError } from '../utils/AppError';
+import { escapeRegex } from '../utils/escapeRegex';
 
 interface CreateAppointmentData {
   doctorId: string;
@@ -180,10 +181,11 @@ export class AppointmentService {
     if (status) filter.status = status;
 
     if (search) {
+      const safe = escapeRegex(search);
       filter.$or = [
-        { fullName: { $regex: search, $options: 'i' } },
-        { phoneNumber: { $regex: search, $options: 'i' } },
-        { orderNumber: { $regex: search, $options: 'i' } },
+        { fullName: { $regex: safe, $options: 'i' } },
+        { phoneNumber: { $regex: safe, $options: 'i' } },
+        { orderNumber: { $regex: safe, $options: 'i' } },
       ];
     }
 
