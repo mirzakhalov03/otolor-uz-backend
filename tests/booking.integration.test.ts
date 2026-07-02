@@ -99,4 +99,17 @@ describe('Booking correctness', () => {
     });
     expect(res.status).toBe(400);
   });
+
+  it('returns a slot-specific message when double-booking the same slot', async () => {
+    const date = tomorrow();
+    const doctorId = await createDoctor(date);
+    const payload = {
+      doctorId, fullName: 'Dup', age: 30, phoneNumber: '+998901112233',
+      selectedDate: date, selectedTime: '09:30',
+    };
+    await request(app).post('/api/appointments').send(payload);
+    const second = await request(app).post('/api/appointments').send(payload);
+    expect(second.status).toBe(409);
+    expect(second.body.message).toMatch(/already booked/i);
+  });
 });

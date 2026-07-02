@@ -38,8 +38,12 @@ export const errorHandler = (
   // Handle MongoDB duplicate key errors
   if ((err as any).code === 11000) {
     statusCode = 409;
-    const field = Object.keys((err as any).keyValue || {}).join(', ');
-    message = `Duplicate value for: ${field}. This slot is already booked.`;
+    const keyValue = (err as any).keyValue || {};
+    const fields = Object.keys(keyValue);
+    const isSlotClash = fields.includes('preferredDate') && fields.includes('preferredTime');
+    message = isSlotClash
+      ? 'This time slot is already booked.'
+      : `A record with this ${fields.join(', ') || 'value'} already exists.`;
   }
 
   // Handle Multer upload errors
