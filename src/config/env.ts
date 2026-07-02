@@ -12,6 +12,14 @@ if (!allowedNodeEnvs.has(nodeEnv)) {
   );
 }
 
+const requireEnv = (key: string): string => {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+  return value;
+};
+
 export const env = {
   port: parseInt(process.env.PORT || '5050', 10),
   nodeEnv,
@@ -22,6 +30,11 @@ export const env = {
   rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),
   rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
   logLevel: process.env.LOG_LEVEL || 'dev',
+  clinicTimezone: process.env.CLINIC_TIMEZONE || 'Asia/Tashkent',
+  jwtSecret: requireEnv('JWT_SECRET'),
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  adminUsername: requireEnv('ADMIN_USERNAME'),
+  adminPassword: requireEnv('ADMIN_PASSWORD'),
   awsRegion: process.env.AWS_REGION || '',
   awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
   awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',

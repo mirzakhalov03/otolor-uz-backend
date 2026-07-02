@@ -19,6 +19,9 @@ describe('Smoke integration tests', () => {
     process.env.NODE_ENV = 'test';
     process.env.MONGO_URI = mongoServer.getUri();
     process.env.CORS_ORIGINS = 'http://localhost:5173';
+    process.env.JWT_SECRET = 'test-secret';
+    process.env.ADMIN_USERNAME = 'admin';
+    process.env.ADMIN_PASSWORD = 'pw';
 
     const { connectDatabase } = await import('../src/config/database');
     await connectDatabase();
