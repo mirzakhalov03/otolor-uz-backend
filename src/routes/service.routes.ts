@@ -8,6 +8,7 @@ import {
 } from '../controllers/service.controller';
 import { serviceValidators } from '../middlewares/validators';
 import { validate } from '../middlewares/validate';
+import { requireAuth } from '../middlewares/auth';
 
 const router = Router();
 
@@ -49,7 +50,7 @@ const router = Router();
  *       400:
  *         description: Validation error or invalid category
  */
-router.post('/', serviceValidators.create, validate, createService);
+router.post('/', requireAuth, serviceValidators.create, validate, createService);
 
 /**
  * @swagger
@@ -145,7 +146,7 @@ router.get('/:id', serviceValidators.getById, validate, getServiceById);
  *       404:
  *         description: Service not found
  */
-router.put('/:id', serviceValidators.update, validate, updateService);
+router.put('/:id', requireAuth, serviceValidators.update, validate, updateService);
 
 /**
  * @swagger
@@ -166,6 +167,6 @@ router.put('/:id', serviceValidators.update, validate, updateService);
  *       404:
  *         description: Service not found
  */
-router.delete('/:id', serviceValidators.delete, validate, deleteService);
+router.delete('/:id', requireAuth, serviceValidators.delete, validate, deleteService);
 
 export default router;

@@ -8,6 +8,7 @@ import {
 } from '../controllers/doctor.controller';
 import { doctorValidators } from '../middlewares/validators';
 import { validate } from '../middlewares/validate';
+import { requireAuth } from '../middlewares/auth';
 
 const router = Router();
 
@@ -53,7 +54,7 @@ const router = Router();
  *       400:
  *         description: Validation error
  */
-router.post('/', doctorValidators.create, validate, createDoctor);
+router.post('/', requireAuth, doctorValidators.create, validate, createDoctor);
 
 /**
  * @swagger
@@ -142,7 +143,7 @@ router.get('/:id', getDoctorById);
  *       404:
  *         description: Doctor not found
  */
-router.patch('/:id', doctorValidators.update, validate, updateDoctor);
+router.patch('/:id', requireAuth, doctorValidators.update, validate, updateDoctor);
 
 /**
  * @swagger
@@ -166,6 +167,6 @@ router.patch('/:id', doctorValidators.update, validate, updateDoctor);
  *       404:
  *         description: Doctor not found
  */
-router.delete('/:id', doctorValidators.delete, validate, deleteDoctor);
+router.delete('/:id', requireAuth, doctorValidators.delete, validate, deleteDoctor);
 
 export default router;

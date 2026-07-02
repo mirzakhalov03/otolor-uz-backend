@@ -50,8 +50,13 @@ describe('Smoke integration tests', () => {
   it('booking flow works end-to-end (doctor -> availability -> booking)', async () => {
     const selectedDate = getTomorrowDateString();
 
+    const login = await request(app)
+      .post('/api/auth/login')
+      .send({ username: 'admin', password: 'pw' });
+
     const createDoctorResponse = await request(app)
       .post('/api/doctors')
+      .set('Authorization', `Bearer ${login.body.data.token}`)
       .send({
         name: 'Dr. Smoke Test',
         specialization: 'General',
@@ -93,10 +98,17 @@ describe('Smoke integration tests', () => {
     expect(availabilityTimesResponse.body.data).not.toContain('09:30');
   });
 
-  it('admin appointments endpoint is reachable without auth (current behavior)', async () => {
-    const response = await request(app).get('/api/admin/appointments');
+  it('admin appointments endpoint requires auth', async () => {
+    const noAuth = await request(app).get('/api/admin/appointments');
+    expect(noAuth.status).toBe(401);
 
-    expect(response.status).toBe(200);
-    expect(response.body.success).toBe(true);
+    const login = await request(app)
+      .post('/api/auth/login')
+      .send({ username: 'admin', password: 'pw' });
+    const withAuth = await request(app)
+      .get('/api/admin/appointments')
+      .set('Authorization', `Bearer ${login.body.data.token}`);
+    expect(withAuth.status).toBe(200);
+    expect(withAuth.body.success).toBe(true);
   });
 });

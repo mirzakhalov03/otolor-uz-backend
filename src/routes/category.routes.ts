@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { createCategory, getCategories } from '../controllers/category.controller';
 import { categoryValidators } from '../middlewares/validators';
 import { validate } from '../middlewares/validate';
+import { requireAuth } from '../middlewares/auth';
 
 const router = Router();
 
@@ -38,7 +39,7 @@ const router = Router();
  *       409:
  *         description: Duplicate category name or slug
  */
-router.post('/', categoryValidators.create, validate, createCategory);
+router.post('/', requireAuth, categoryValidators.create, validate, createCategory);
 
 /**
  * @swagger

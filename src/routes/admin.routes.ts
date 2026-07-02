@@ -6,8 +6,10 @@ import {
 } from '../controllers/appointment.controller';
 import { appointmentValidators } from '../middlewares/validators';
 import { validate } from '../middlewares/validate';
+import { requireAuth } from '../middlewares/auth';
 
 const router = Router();
+router.use(requireAuth);
 
 /**
  * @swagger
