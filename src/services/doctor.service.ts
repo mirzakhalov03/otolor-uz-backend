@@ -1,6 +1,9 @@
 import { Doctor, IDoctor, IWeeklySchedule } from '../models/Doctor';
 import { AppError, NotFoundError } from '../utils/AppError';
 import { escapeRegex } from '../utils/escapeRegex';
+import { getClinicToday } from '../utils/date';
+import { assertScheduleWithinWindow } from '../utils/schedule';
+import { env } from '../config/env';
 
 export class DoctorService {
   /**
@@ -87,27 +90,7 @@ export class DoctorService {
    * Validates that all date keys in the schedule are within the next 7 days from today.
    */
   private validateDateKeysWithin7Days(schedule: IWeeklySchedule): void {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const maxDate = new Date(today);
-    maxDate.setDate(maxDate.getDate() + 7); // 7 days ahead
-
-    for (const dateKey of Object.keys(schedule)) {
-      const date = new Date(dateKey + 'T00:00:00');
-      if (isNaN(date.getTime())) {
-        throw new AppError(`Invalid date: ${dateKey}. Use YYYY-MM-DD format.`, 400);
-      }
-      if (date < today) {
-        throw new AppError(`Date ${dateKey} is in the past. Only future dates are allowed.`, 400);
-      }
-      if (date >= maxDate) {
-        throw new AppError(
-          `Date ${dateKey} is too far ahead. You can only set availability for the next 7 days.`,
-          400
-        );
-      }
-    }
+    assertScheduleWithinWindow(schedule, getClinicToday(env.clinicTimezone));
   }
 
   /**
@@ -138,12 +121,8 @@ export class DoctorService {
       const timeRange = newSchedule[dateStr];
 
       if (!timeRange) {
-        // Date was removed from schedule — check if this date was previously in the schedule
-        // Only flag if the date is still in the future
-        const apptDate = new Date(dateStr + 'T00:00:00');
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (apptDate >= today) {
+        // Date was removed from schedule — only flag if the date is still in the future
+        if (dateStr >= getClinicToday(env.clinicTimezone)) {
           conflicts.push(`${dateStr} at ${appt.preferredTime} — date removed from schedule`);
         }
         continue;

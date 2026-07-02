@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { isValidWeeklySchedule } from '../utils/schedule';
 
 /**
  * Weekly schedule uses specific dates (YYYY-MM-DD) as keys,
@@ -17,9 +18,6 @@ export interface IDoctor extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
-const dateKeyRegex = /^\d{4}-\d{2}-\d{2}$/;
-const timeRangeRegex = /^([01]\d|2[0-3]):[0-5]\d-([01]\d|2[0-3]):[0-5]\d$/;
 
 const doctorSchema = new Schema<IDoctor>(
   {
@@ -43,17 +41,7 @@ const doctorSchema = new Schema<IDoctor>(
       type: Schema.Types.Mixed,
       required: [true, 'Weekly schedule is required'],
       validate: {
-        validator: function (schedule: IWeeklySchedule): boolean {
-          if (!schedule || typeof schedule !== 'object') return false;
-
-          for (const [key, time] of Object.entries(schedule)) {
-            // Keys must be YYYY-MM-DD dates
-            if (!dateKeyRegex.test(key)) return false;
-            // Values must be HH:MM-HH:MM time ranges
-            if (typeof time !== 'string' || !timeRangeRegex.test(time)) return false;
-          }
-          return Object.keys(schedule).length > 0;
-        },
+        validator: (schedule: IWeeklySchedule): boolean => isValidWeeklySchedule(schedule),
         message:
           'Invalid schedule format. Use date strings (YYYY-MM-DD) as keys and "HH:MM-HH:MM" as values.',
       },

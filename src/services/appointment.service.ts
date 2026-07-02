@@ -4,6 +4,8 @@ import { doctorService } from './doctor.service';
 import { AppError, NotFoundError, BadRequestError, ConflictError } from '../utils/AppError';
 import { escapeRegex } from '../utils/escapeRegex';
 import { generateSlots } from '../utils/time';
+import { getClinicToday } from '../utils/date';
+import { env } from '../config/env';
 
 interface CreateAppointmentData {
   doctorId: string;
@@ -102,18 +104,11 @@ export class AppointmentService {
    */
   async getAvailableDates(doctorId: string): Promise<string[]> {
     const doctor = await doctorService.getDoctorById(doctorId);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = getClinicToday(env.clinicTimezone);
 
-    // The schedule keys are specific dates — return only future ones, sorted
-    const availableDates = Object.keys(doctor.weeklySchedule)
-      .filter((dateStr) => {
-        const date = new Date(dateStr + 'T00:00:00');
-        return date >= today;
-      })
+    return Object.keys(doctor.weeklySchedule)
+      .filter((dateStr) => dateStr >= today)
       .sort();
-
-    return availableDates;
   }
 
   /**

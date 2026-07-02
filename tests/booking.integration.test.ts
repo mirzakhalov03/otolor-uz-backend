@@ -89,4 +89,14 @@ describe('Booking correctness', () => {
     });
     expect(rebook.status).toBe(409);
   });
+
+  it('rejects booking a past date', async () => {
+    const date = tomorrow();
+    const doctorId = await createDoctor(date);
+    const res = await request(app).post('/api/appointments').send({
+      doctorId, fullName: 'Past', age: 30, phoneNumber: '+998901112233',
+      selectedDate: '2000-01-01', selectedTime: '09:30',
+    });
+    expect(res.status).toBe(400);
+  });
 });

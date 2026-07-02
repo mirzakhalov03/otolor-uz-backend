@@ -1,4 +1,7 @@
 import { body, param, query } from 'express-validator';
+import { getClinicToday } from '../utils/date';
+import { env } from '../config/env';
+import { assertValidWeeklySchedule } from '../utils/schedule';
 
 /**
  * Validation rules for appointment-related requests.
@@ -42,10 +45,7 @@ export const appointmentValidators = {
       .matches(/^\d{4}-\d{2}-\d{2}$/)
       .withMessage('Date must be in YYYY-MM-DD format')
       .custom((value: string) => {
-        const date = new Date(value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (date < today) {
+        if (value < getClinicToday(env.clinicTimezone)) {
           throw new Error('Cannot book appointments in the past');
         }
         return true;
@@ -118,22 +118,7 @@ export const doctorValidators = {
       .withMessage('Weekly schedule is required')
       .isObject()
       .withMessage('Schedule must be an object')
-      .custom((schedule: Record<string, string>) => {
-        const dateKeyRegex = /^\d{4}-\d{2}-\d{2}$/;
-        const timeRangeRegex = /^([01]\d|2[0-3]):[0-5]\d-([01]\d|2[0-3]):[0-5]\d$/;
-
-        for (const [dateKey, time] of Object.entries(schedule)) {
-          if (!dateKeyRegex.test(dateKey)) {
-            throw new Error(`Invalid date key: ${dateKey}. Use YYYY-MM-DD format.`);
-          }
-          if (!timeRangeRegex.test(time)) {
-            throw new Error(
-              `Invalid time range for ${dateKey}. Use "HH:MM-HH:MM" format.`
-            );
-          }
-        }
-        return true;
-      }),
+      .custom(assertValidWeeklySchedule),
   ],
 
   /**
@@ -170,22 +155,7 @@ export const doctorValidators = {
       .optional()
       .isObject()
       .withMessage('Schedule must be an object')
-      .custom((schedule: Record<string, string>) => {
-        const dateKeyRegex = /^\d{4}-\d{2}-\d{2}$/;
-        const timeRangeRegex = /^([01]\d|2[0-3]):[0-5]\d-([01]\d|2[0-3]):[0-5]\d$/;
-
-        for (const [dateKey, time] of Object.entries(schedule)) {
-          if (!dateKeyRegex.test(dateKey)) {
-            throw new Error(`Invalid date key: ${dateKey}. Use YYYY-MM-DD format.`);
-          }
-          if (!timeRangeRegex.test(time)) {
-            throw new Error(
-              `Invalid time range for ${dateKey}. Use "HH:MM-HH:MM" format.`
-            );
-          }
-        }
-        return true;
-      }),
+      .custom(assertValidWeeklySchedule),
   ],
 
   /**
