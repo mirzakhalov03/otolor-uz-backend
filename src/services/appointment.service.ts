@@ -3,6 +3,7 @@ import { getNextOrderNumber } from '../models/Counter';
 import { doctorService } from './doctor.service';
 import { AppError, NotFoundError, BadRequestError, ConflictError } from '../utils/AppError';
 import { escapeRegex } from '../utils/escapeRegex';
+import { generateSlots } from '../utils/time';
 
 interface CreateAppointmentData {
   doctorId: string;
@@ -54,18 +55,12 @@ export class AppointmentService {
       );
     }
 
-    // 3. Check if time falls within working hours
-    const [selectedH, selectedM] = selectedTime.split(':').map(Number);
-    const [startH, startM] = daySchedule.start.split(':').map(Number);
-    const [endH, endM] = daySchedule.end.split(':').map(Number);
-
-    const selectedMinutes = selectedH * 60 + selectedM;
-    const startMinutes = startH * 60 + startM;
-    const endMinutes = endH * 60 + endM;
-
-    if (selectedMinutes < startMinutes || selectedMinutes >= endMinutes) {
+    // 3. The selected time must be one of the generated 30-min slots
+    const availableSlots = generateSlots(daySchedule.start, daySchedule.end);
+    if (!availableSlots.includes(selectedTime)) {
       throw BadRequestError(
-        `Selected time ${selectedTime} is outside Dr. ${doctor.name}'s working hours (${daySchedule.start}-${daySchedule.end})`
+        `Selected time ${selectedTime} is not an available slot for Dr. ${doctor.name} ` +
+          `(working hours ${daySchedule.start}-${daySchedule.end}, 30-minute slots)`
       );
     }
 
@@ -138,16 +133,12 @@ export class AppointmentService {
     }
 
     // Generate all possible slots
-    const allSlots = doctorService.generateTimeSlots(
-      daySchedule.start,
-      daySchedule.end
-    );
+    const allSlots = generateSlots(daySchedule.start, daySchedule.end);
 
-    // Get already booked slots
+    // Get already booked slots (any status marks the slot as taken)
     const bookedAppointments = await Appointment.find({
       doctorId,
       preferredDate: date,
-      status: { $ne: 'missed' }, // Missed slots can be rebooked
     }).select('preferredTime');
 
     const bookedTimes = new Set(
