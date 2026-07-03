@@ -113,6 +113,16 @@ export const doctorValidators = {
       .isLength({ max: 2000 })
       .withMessage('Avatar URL cannot exceed 2000 characters'),
 
+    body('experience')
+      .optional()
+      .isInt({ min: 0, max: 80 })
+      .withMessage('Experience must be a whole number between 0 and 80'),
+
+    body('isFeatured')
+      .optional()
+      .isBoolean()
+      .withMessage('isFeatured must be a boolean'),
+
     body('weeklySchedule')
       .notEmpty()
       .withMessage('Weekly schedule is required')
@@ -150,6 +160,16 @@ export const doctorValidators = {
       .withMessage('Avatar URL must be a valid URL')
       .isLength({ max: 2000 })
       .withMessage('Avatar URL cannot exceed 2000 characters'),
+
+    body('experience')
+      .optional()
+      .isInt({ min: 0, max: 80 })
+      .withMessage('Experience must be a whole number between 0 and 80'),
+
+    body('isFeatured')
+      .optional()
+      .isBoolean()
+      .withMessage('isFeatured must be a boolean'),
 
     body('weeklySchedule')
       .optional()

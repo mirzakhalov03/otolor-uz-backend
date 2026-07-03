@@ -37,6 +37,14 @@ const router = Router();
  *               avatarUrl:
  *                 type: string
  *                 example: "https://your-bucket.s3.your-region.amazonaws.com/doctors/avatars/example.jpg"
+ *               experience:
+ *                 type: integer
+ *                 example: 12
+ *                 description: Years of experience (0–80), shown on public profile cards
+ *               isFeatured:
+ *                 type: boolean
+ *                 example: true
+ *                 description: Surface this doctor on the public About page / home carousel
  *               weeklySchedule:
  *                 type: object
  *                 example:
@@ -129,6 +137,13 @@ router.get('/:id', getDoctorById);
  *               avatarUrl:
  *                 type: string
  *                 example: "https://your-bucket.s3.your-region.amazonaws.com/doctors/avatars/example.jpg"
+ *               experience:
+ *                 type: integer
+ *                 example: 12
+ *                 description: Years of experience (0–80)
+ *               isFeatured:
+ *                 type: boolean
+ *                 example: true
  *               weeklySchedule:
  *                 type: object
  *                 example:

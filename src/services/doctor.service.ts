@@ -15,6 +15,8 @@ export class DoctorService {
     name: string;
     specialization?: string;
     avatarUrl?: string;
+    experience?: number;
+    isFeatured?: boolean;
     weeklySchedule: IWeeklySchedule;
   }): Promise<IDoctor> {
     // Validate that all date keys are within the next 7 days
@@ -63,6 +65,8 @@ export class DoctorService {
       name?: string;
       specialization?: string;
       avatarUrl?: string;
+      experience?: number;
+      isFeatured?: boolean;
       weeklySchedule?: IWeeklySchedule;
     }
   ): Promise<IDoctor> {

@@ -14,6 +14,8 @@ export interface IDoctor extends Document {
   name: string;
   specialization?: string;
   avatarUrl?: string;
+  experience?: number; // years of experience, shown on public profile cards
+  isFeatured?: boolean; // surface on the public About page / home carousel
   weeklySchedule: IWeeklySchedule;
   createdAt: Date;
   updatedAt: Date;
@@ -36,6 +38,15 @@ const doctorSchema = new Schema<IDoctor>(
       type: String,
       trim: true,
       maxlength: [2000, 'Avatar URL cannot exceed 2000 characters'],
+    },
+    experience: {
+      type: Number,
+      min: [0, 'Experience cannot be negative'],
+      max: [80, 'Experience cannot exceed 80 years'],
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
     },
     weeklySchedule: {
       type: Schema.Types.Mixed,

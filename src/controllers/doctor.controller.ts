@@ -7,12 +7,14 @@ import { asyncHandler } from '../utils/asyncHandler';
  * @description Create a new doctor
  */
 export const createDoctor = asyncHandler(async (req: Request, res: Response) => {
-  const { name, specialization, avatarUrl, weeklySchedule } = req.body;
+  const { name, specialization, avatarUrl, experience, isFeatured, weeklySchedule } = req.body;
 
   const doctor = await doctorService.createDoctor({
     name,
     specialization,
     avatarUrl,
+    experience,
+    isFeatured,
     weeklySchedule,
   });
 
@@ -59,12 +61,14 @@ export const getDoctorById = asyncHandler(async (req: Request, res: Response) =>
 export const updateDoctor = asyncHandler(
   async (req: Request, res: Response) => {
     const id = req.params.id as string;
-    const { name, specialization, avatarUrl, weeklySchedule } = req.body;
+    const { name, specialization, avatarUrl, experience, isFeatured, weeklySchedule } = req.body;
 
     const doctor = await doctorService.updateDoctor(id, {
       name,
       specialization,
       avatarUrl,
+      experience,
+      isFeatured,
       weeklySchedule,
     });
 
