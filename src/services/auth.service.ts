@@ -30,7 +30,16 @@ class AuthService {
 
   verifyToken(token: string): AuthTokenPayload {
     try {
-      return jwt.verify(token, env.jwtSecret) as AuthTokenPayload;
+      const decoded = jwt.verify(token, env.jwtSecret, { algorithms: ['HS256'] });
+      if (
+        typeof decoded !== 'object' ||
+        decoded === null ||
+        (decoded as Record<string, unknown>).role !== 'admin' ||
+        !(decoded as Record<string, unknown>).sub
+      ) {
+        throw new AppError('Invalid or expired token', 401);
+      }
+      return decoded as AuthTokenPayload;
     } catch {
       throw new AppError('Invalid or expired token', 401);
     }
