@@ -213,6 +213,34 @@ export const categoryValidators = {
       .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
       .withMessage('Slug must contain lowercase letters, numbers, and hyphens only'),
   ],
+
+  update: [
+    param('id')
+      .isMongoId()
+      .withMessage('Invalid category ID format'),
+
+    body('name')
+      .optional()
+      .isString()
+      .trim()
+      .isLength({ min: 2, max: 120 })
+      .withMessage('Category name must be between 2 and 120 characters'),
+
+    body('slug')
+      .optional()
+      .isString()
+      .trim()
+      .isLength({ min: 2, max: 150 })
+      .withMessage('Slug must be between 2 and 150 characters')
+      .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+      .withMessage('Slug must contain lowercase letters, numbers, and hyphens only'),
+  ],
+
+  delete: [
+    param('id')
+      .isMongoId()
+      .withMessage('Invalid category ID format'),
+  ],
 };
 
 /**

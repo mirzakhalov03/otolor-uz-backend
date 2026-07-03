@@ -28,3 +28,27 @@ export const getCategories = asyncHandler(async (_req: Request, res: Response) =
     data: categories,
   });
 });
+
+export const updateCategory = asyncHandler(async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const { name, slug } = req.body;
+
+  const category = await categoryService.updateCategory(id, { name, slug });
+
+  sendResponse({
+    res,
+    message: 'Category updated successfully',
+    data: category,
+  });
+});
+
+export const deleteCategory = asyncHandler(async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+
+  await categoryService.deleteCategory(id);
+
+  sendResponse({
+    res,
+    message: 'Category deleted successfully',
+  });
+});
