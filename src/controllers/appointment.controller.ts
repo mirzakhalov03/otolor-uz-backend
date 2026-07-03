@@ -5,8 +5,8 @@ import { asyncHandler } from '../utils/asyncHandler';
 
 /**
  * @description Get availability for a doctor
- * - If only `doctorId` is provided → returns available dates (next 30 days)
- * - If `doctorId` + `date` are provided → returns available time slots for that date
+ * - If only `doctorId` is provided → returns available dates (date-keyed for the next 7 days)
+ * - If `doctorId` + `date` are provided → returns available 30-minute time slots for that date
  */
 export const getAvailability = asyncHandler(
   async (req: Request, res: Response) => {

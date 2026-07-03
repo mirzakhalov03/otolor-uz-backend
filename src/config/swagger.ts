@@ -21,6 +21,10 @@ const options: swaggerJsdoc.Options = {
     ],
     tags: [
       {
+        name: 'Auth',
+        description: 'Admin authentication',
+      },
+      {
         name: 'Uploads',
         description: 'File upload endpoints',
       },
@@ -84,11 +88,12 @@ const options: swaggerJsdoc.Options = {
             },
             weeklySchedule: {
               type: 'object',
-              properties: {
-                Monday: { type: 'string', example: '09:00-16:00' },
-                Tuesday: { type: 'string', example: '09:00-17:00' },
-                Wednesday: { type: 'string', example: '09:00-16:00' },
-                Thursday: { type: 'string', example: '09:00-14:00' },
+              additionalProperties: { type: 'string', example: '09:00-17:00' },
+              description:
+                'Date-keyed availability for the next 7 days: { "YYYY-MM-DD": "HH:MM-HH:MM" }.',
+              example: {
+                '2026-07-03': '09:00-17:00',
+                '2026-07-04': '09:00-14:00',
               },
             },
             createdAt: { type: 'string', format: 'date-time' },
@@ -138,6 +143,13 @@ const options: swaggerJsdoc.Options = {
               },
             },
           },
+        },
+      },
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
         },
       },
     },

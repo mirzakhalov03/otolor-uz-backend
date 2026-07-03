@@ -17,9 +17,7 @@ const router = Router();
  *   get:
  *     summary: Get doctor availability (dates or time slots)
  *     description: |
- *       Returns availability data based on query parameters:
- *       - **Only `doctorId`** → Returns the next 30 days where the doctor has working hours
- *       - **`doctorId` + `date`** → Returns unbooked 30-minute time slots for that specific date
+ *       Returns available dates (schedule is date-keyed for the next 7 days) when only doctorId is given, or 30-minute time slots when a date is also provided.
  *     tags: [Appointments (Public)]
  *     parameters:
  *       - in: query
